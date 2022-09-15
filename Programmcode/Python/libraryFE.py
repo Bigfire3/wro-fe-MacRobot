@@ -14,9 +14,21 @@
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
+from ev3dev2.display import Display
+from textwrap import wrap
 
 steering_motor = MediumMotor(OUTPUT_A)
 color_sensor = ColorSensor(INPUT_3)
+lcd = Display()
+
+def showText(string, font_name = 'courB24', font_width = 15, font_height = 24):
+    lcd.clear()
+    strings = wrap(string, width = int(180 / font_width))
+    for i in range(len(strings)):
+        x_val = 89 - font_width / 2 * len(strings[i])
+        y_val = 63 - (font_height + 1) * (len(strings) / 2 - i)
+        lcd.text_pixels(strings[i], False, x_val, y_val, font=font_name)
+    lcd.update()
 
 def MaxRange(test_value):
     value = test_value

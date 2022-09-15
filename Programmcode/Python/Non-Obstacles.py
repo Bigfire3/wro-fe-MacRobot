@@ -11,7 +11,7 @@ steering_motor = MediumMotor(OUTPUT_A)
 drive_motor = MediumMotor(OUTPUT_B)
 
 # sensors
-infrared_sensor = InfraredSensor(INPUT_1)
+# ultrasonic_sensor = UltrasonicSensor(INPUT_1)
 gyro_sensor = GyroSensor(INPUT_2)
 color_sensor = ColorSensor(INPUT_3)
 ultrasonic_sensor = UltrasonicSensor(INPUT_4)
@@ -28,7 +28,7 @@ drive_motor.on(50)
 
 pid = libraryFE.myPID(0.1, 1, 0, 1)
 
-while (rounds <= 13 or rounds >= 13):
+while (-13 < rounds < 13):
     #print(color_sensor.color, file = sys.stderr)
     if (color_sensor.color == 5):
         if(rounds == 0):
@@ -44,16 +44,10 @@ while (rounds <= 13 or rounds >= 13):
             libraryFE.WaitForColor(6)
     
     rotation = gyro_sensor.angle
-    if (ultrasonic_sensor.distance_centimeters < 15):
-        rotation -= 15
-    elif(infrared_sensor.proximity < 10.5):
-        rotation += 15
-
-    set_point = 2 * ((rotation) - (rounds * 90))
-    test_point = steering_motor.degrees
-    pid_steering = pid.run(set_point, test_point)
-    if ((steering_motor.degrees > 100 and pid_steering > 0) or (steering_motor.degrees < -100 and pid_steering < 0)): pid_steering = 0
-    steering_motor.on(libraryFE.MaxRange(pid_steering))
-            
+    gyro_point = rotation - (rounds * 90)
+    ultrasonic_point = 25 - ultrasonic_sensor.distance_centimeters
+    libraryFE.SetSteering(libraryFE.MaxRange(gyro_point + ultrasonic_point))
+    # libraryFE.showText(str(gyro_point) + "U: " + str(ultrasonic_point))
+    
 steering_motor.off()
 drive_motor.on_for_rotations(-50, 7)
