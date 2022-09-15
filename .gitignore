@@ -1,4 +1,4 @@
 /TShirt
-/.gitignore
+.gitignore
 /Programmcode/Python/.venv
 /Programmcode/Python/.vscode
