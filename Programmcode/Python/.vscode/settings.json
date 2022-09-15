@@ -1,0 +1,5 @@
+{
+    "files.eol": "\n",
+    "ev3devBrowser.download.exclude": "{**/.*,LICENSE,README.md}",
+    "terminal.integrated.shell.windows": "cmd.exe"
+}
