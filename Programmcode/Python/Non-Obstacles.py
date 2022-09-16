@@ -46,8 +46,7 @@ while (-13 < rounds < 13):
     rotation = gyro_sensor.angle
     gyro_point = rotation - (rounds * 90)
     ultrasonic_point = 25 - ultrasonic_sensor.distance_centimeters
-    libraryFE.SetSteering(libraryFE.MaxRange(gyro_point + ultrasonic_point))
-    # libraryFE.showText(str(gyro_point) + "U: " + str(ultrasonic_point))
+    libraryFE.SetSteering(libraryFE.MaxRange(3 * gyro_point))
     
 steering_motor.off()
 drive_motor.on_for_rotations(-50, 7)
