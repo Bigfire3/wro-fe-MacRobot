@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-'''
+"""
 0: No color
 1: Black
 2: Blue
@@ -9,14 +9,15 @@
 5: Red
 6: White
 7: Brown
-'''
+"""
 
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
 from ev3dev2.display import Display
-from textwrap import wrap
 from ev3dev2.led import Leds
+from textwrap import wrap
+from time import sleep
 
 # motors
 steering_motor = MediumMotor(OUTPUT_A)
@@ -29,7 +30,9 @@ color_sensor = ColorSensor(INPUT_3)
 lcd = Display()
 leds = Leds()
 
-def showText(string, font_name = 'courB24', font_width = 15, font_height = 24):
+# variables
+
+def showText(string, font_name = "courB24", font_width = 15, font_height = 24):
     lcd.clear()
     strings = wrap(string, width = int(180 / font_width))
     for i in range(len(strings)):
@@ -38,13 +41,13 @@ def showText(string, font_name = 'courB24', font_width = 15, font_height = 24):
         lcd.text_pixels(strings[i], False, x_val, y_val, font=font_name)
     lcd.update()
 
-def MaxRange(test_value):
-    value = test_value
-    if (test_value > 100):
-        value = 100
-    elif (test_value < -100):
-        value = -100
-    return value
+def MaxRange(value, min = -100, max = 100):
+    if (value < min):
+        return min
+    elif (value > max):
+        return max
+    else:
+        return value
 
 def WaitForColor(color):
     while (color_sensor.color != color):
@@ -52,11 +55,11 @@ def WaitForColor(color):
 
 def SetSteering(direction):
     pid = myPID(0.1, 1, 0, 0)
-    while(not ((steering_motor.degrees > direction - 3) and (steering_motor.degrees < direction + 3))):
-        test_point = steering_motor.degrees
-        set_point = direction
-        pid_speed = pid.run(set_point, test_point)
-        steering_motor.on(MaxRange(pid_speed))
+    while(not (direction - 3 < -steering_motor.degrees < direction + 3)):
+        test_value = -steering_motor.degrees
+        set_value = direction
+        pid_speed = pid.run(set_value, test_value)
+        steering_motor.on(-MaxRange(pid_speed))
     steering_motor.off()
 
 def SetLeds(color):
@@ -65,10 +68,18 @@ def SetLeds(color):
 
 def ResetGyroSensor():
     SetLeds("RED")
-    while (gyro_sensor.angle != gyro_sensor.angle):
+    while (gyro_sensor.angle == gyro_sensor.angle):
+        InfraredSensor(INPUT_2).proximity # read input 2 as infrared to change port mode
+    SetLeds("YELLOW")
+    while (not (gyro_sensor.angle == gyro_sensor.angle)):
         pass
+    sleep(1)
+    gyro_sensor.reset()
+    sleep(1)
+    SetLeds("GREEN")
 
-class myPID :
+
+class myPID:
     dt  = 0.0
     kp  = 0.0
     kd  = 0.0
