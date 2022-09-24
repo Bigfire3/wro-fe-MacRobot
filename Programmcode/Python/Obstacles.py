@@ -26,14 +26,14 @@ pixy_cam.mode = "ALL"
 button = Button()
 
 # variables
-pid = libraryFE.myPID(0.1, 2, 0, 0)
+
 rounds = 0
 clockwise = True
 rotation = 0
 
 # functions
 def pass_object(sig, x_pos, height):
-    global pid
+    pid = libraryFE.myPID(0.1, 1, 0, 0)
     """
     1-3 = red, true, left
     4-6 = green, false, right
