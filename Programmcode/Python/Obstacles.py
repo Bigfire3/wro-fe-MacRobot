@@ -58,7 +58,9 @@ def pass_object(sig):
 
 # main
 if (__name__ == "__main__"):
+    libraryFE.SetLeds("BLACK") # resets the leds
     steering_motor.reset()
+    
     gyro_sensor.reset()
 
     while (rounds < 13 or rounds > -13):
@@ -97,7 +99,6 @@ if (__name__ == "__main__"):
             pid_speed = pid.run(set_point, test_point)
             steering_motor.on(libraryFE.MaxRange(pid_speed))
 
-
+    drive_motor.off()
     libraryFE.SetSteering(0)
     steering_motor.off()
-    drive_motor.on_for_rotations(-50, 7)

@@ -16,10 +16,18 @@ from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
 from ev3dev2.display import Display
 from textwrap import wrap
+from ev3dev2.led import Leds
 
+# motors
 steering_motor = MediumMotor(OUTPUT_A)
+
+# sensors
+gyro_sensor = GyroSensor(INPUT_2)
 color_sensor = ColorSensor(INPUT_3)
+
+# others
 lcd = Display()
+leds = Leds()
 
 def showText(string, font_name = 'courB24', font_width = 15, font_height = 24):
     lcd.clear()
@@ -50,6 +58,15 @@ def SetSteering(direction):
         pid_speed = pid.run(set_point, test_point)
         steering_motor.on(MaxRange(pid_speed))
     steering_motor.off()
+
+def SetLeds(color):
+    leds.set_color("LEFT", color)
+    leds.set_color("RIGHT", color)
+
+def ResetGyroSensor():
+    SetLeds("RED")
+    while (gyro_sensor.angle != gyro_sensor.angle):
+        pass
 
 class myPID :
     dt  = 0.0
