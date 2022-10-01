@@ -4,7 +4,7 @@
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
-import libraryFE
+import lib
 
 # motors
 steering_motor = MediumMotor(OUTPUT_A)
@@ -26,7 +26,7 @@ steering_motor.reset()
 gyro_sensor.reset()
 drive_motor.on(50)
 
-pid = libraryFE.myPID(0.1, 1, 0, 1)
+pid = lib.myPID(0.1, 1, 0, 1)
 
 while (-13 < rounds < 13):
     #print(color_sensor.color, file = sys.stderr)
@@ -35,18 +35,18 @@ while (-13 < rounds < 13):
             clockwise = True
         if(clockwise == True):
             rounds += 1
-            libraryFE.WaitForColor(6)
+            lib.WaitForColor(6)
     elif(color_sensor.color == 2):
         if(rounds == 0):
             clockwise = False
         if(clockwise == False):
             rounds -= 1
-            libraryFE.WaitForColor(6)
+            lib.WaitForColor(6)
     
     rotation = gyro_sensor.angle
     gyro_point = rotation - (rounds * 90)
     ultrasonic_point = 25 - ultrasonic_sensor.distance_centimeters
-    libraryFE.SetSteering(libraryFE.MaxRange(3 * gyro_point))
+    lib.SetSteering(lib.MaxRange(3 * gyro_point))
     
 steering_motor.off()
 drive_motor.on_for_rotations(-50, 7)
