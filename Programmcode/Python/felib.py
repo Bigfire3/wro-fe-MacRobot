@@ -18,6 +18,7 @@ from ev3dev2.display import Display
 from ev3dev2.led import Leds
 from textwrap import wrap
 from time import sleep
+from ev3dev2.port import LegoPort
 
 # motors
 steering_motor = MediumMotor(OUTPUT_A)
@@ -30,9 +31,8 @@ color_sensor = ColorSensor(INPUT_3)
 lcd = Display()
 leds = Leds()
 
-# variables
 
-def showText(string, font_name = "courB24", font_width = 15, font_height = 24):
+def show_text(string, font_name = "courB24", font_width = 15, font_height = 24):
     lcd.clear()
     strings = wrap(string, width = int(180 / font_width))
     for i in range(len(strings)):
@@ -41,7 +41,7 @@ def showText(string, font_name = "courB24", font_width = 15, font_height = 24):
         lcd.text_pixels(strings[i], False, x_val, y_val, font=font_name)
     lcd.update()
 
-def MaxRange(value, min = -100, max = 100):
+def max_range(value, min = -100, max = 100):
     if (value < min):
         return min
     elif (value > max):
@@ -49,35 +49,54 @@ def MaxRange(value, min = -100, max = 100):
     else:
         return value
 
-def WaitForColor(color):
+def wait_for_color(color):
     while (color_sensor.color != color):
         pass
 
-def SetSteering(direction):
+def set_steering(direction):
     pid = myPID(0.1, 1, 0, 0)
     while(not (direction - 3 < -steering_motor.degrees < direction + 3)):
         test_value = -steering_motor.degrees
         set_value = direction
         pid_speed = pid.run(set_value, test_value)
-        steering_motor.on(-MaxRange(pid_speed))
+        steering_motor.on(-max_range(pid_speed))
     steering_motor.off()
 
-def SetLeds(color):
+def set_leds(color):
     leds.set_color("LEFT", color)
     leds.set_color("RIGHT", color)
 
-def ResetGyroSensor():
-    SetLeds("RED")
-    while (gyro_sensor.angle == gyro_sensor.angle):
-        InfraredSensor(INPUT_2).proximity # read input 2 as infrared to change port mode
-    SetLeds("YELLOW")
+def reset_gyro_sensor():
+    set_leds("RED")
+    '''
+        while (gyro_sensor.angle == gyro_sensor.angle):
+        LegoPort(INPUT_2).mode = "auto" # change port mode
+        gyro_sensor = GyroSensor(INPUT_2)
+    '''
+    set_leds("YELLOW")
     while (not (gyro_sensor.angle == gyro_sensor.angle)):
         pass
     sleep(1)
     gyro_sensor.reset()
     sleep(1)
-    SetLeds("GREEN")
+    set_leds("GREEN")
 
+def round_counter():
+    global rounds
+    rounds = 0
+    while -13 < rounds < 13:
+        if (color_sensor.color == 5): # red/orange
+            if (rounds == 0):
+                clockwise = True
+            if (clockwise):
+                rounds += 1
+                wait_for_color(6)
+        elif (color_sensor.color == 2 or color_sensor.color == 0): # blue
+            if (rounds == 0):
+                clockwise = False
+            if (not clockwise):
+                rounds -= 1
+                wait_for_color(6)
 
 class myPID:
     dt  = 0.0
