@@ -38,14 +38,14 @@ class Object:
                 felib.set_steering(calculated_steering * self.sign)
 
 # main
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     # motors
     steering_motor = MediumMotor(OUTPUT_A)
     drive_motor = MediumMotor(OUTPUT_B)
 
     # sensors
     gyro_sensor = GyroSensor(INPUT_2)
-    color_sensor = ColorSensor(INPUT_3)
+    color_sensor = ColorSensor(INPUT_4)
     LegoPort(INPUT_4).mode = "auto"
     sleep(2)
     pixy_cam = Sensor(INPUT_4)

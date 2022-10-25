@@ -18,18 +18,20 @@ from ev3dev2.display import Display
 from ev3dev2.led import Leds
 from textwrap import wrap
 from time import sleep
-from ev3dev2.port import LegoPort
 
 # motors
 steering_motor = MediumMotor(OUTPUT_A)
 
 # sensors
-gyro_sensor = GyroSensor(INPUT_2)
-color_sensor = ColorSensor(INPUT_3)
+#gyro_sensor = GyroSensor(INPUT_2)
+color_sensor = ColorSensor(INPUT_4)
 
 # others
 lcd = Display()
 leds = Leds()
+
+# variables
+rounds = 0
 
 
 def show_text(string, font_name = "courB24", font_width = 15, font_height = 24):
@@ -66,7 +68,7 @@ def set_leds(color):
     leds.set_color("LEFT", color)
     leds.set_color("RIGHT", color)
 
-def reset_gyro_sensor():
+""" def reset_gyro_sensor():
     set_leds("RED")
     '''
         while (gyro_sensor.angle == gyro_sensor.angle):
@@ -79,11 +81,10 @@ def reset_gyro_sensor():
     sleep(1)
     gyro_sensor.reset()
     sleep(1)
-    set_leds("GREEN")
+    set_leds("GREEN") """
 
 def round_counter():
     global rounds
-    rounds = 0
     while -13 < rounds < 13:
         if (color_sensor.color == 5): # red/orange
             if (rounds == 0):
@@ -91,6 +92,8 @@ def round_counter():
             if (clockwise):
                 rounds += 1
                 wait_for_color(6)
+            print(rounds, file = sys.stderr)
+              
         elif (color_sensor.color == 2 or color_sensor.color == 0): # blue
             if (rounds == 0):
                 clockwise = False
