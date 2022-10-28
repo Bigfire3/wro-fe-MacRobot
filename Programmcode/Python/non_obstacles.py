@@ -6,7 +6,7 @@ from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
 import felib
 import threading
-
+ 
 if __name__ == "__main__":
     # motors
     steering_motor = MediumMotor(OUTPUT_A)
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # sensors
     ultrasonic_sensor1 = UltrasonicSensor(INPUT_1)
     ultrasonic_sensor2 = UltrasonicSensor(INPUT_2)
-    ultrasonic_sensor3 = UltrasonicSensor(INPUT_3)
+    gyro_sensor = GyroSensor(INPUT_3)
     color_sensor = ColorSensor(INPUT_4)
 
     # variables
@@ -23,45 +23,25 @@ if __name__ == "__main__":
 
     # main
     steering_motor.reset()
+    felib.reset_gyro_sensor()
     line_thread = threading.Thread(target = felib.round_counter)
     line_thread.start()
-    
-    while -13 < felib.rounds < 13:
-        drive_motor.on(50)
-        
-        if felib.rounds > 0:
-            offset = (ultrasonic_sensor3.distance_centimeters - 255) / 10
-        elif felib.rounds < 0:
-            offset = (ultrasonic_sensor3.distance_centimeters - 255) / -10
 
-        value = (ultrasonic_sensor1.distance_centimeters + offset) / (ultrasonic_sensor2.distance_centimeters - offset)
-        if value < 1:
-            value = -1 / value
-        value = value - (value / abs(value))
-        felib.set_steering(felib.max_range(value * -20))
+    while -12 < felib.rounds < 12:
+        drive_motor.on(0)
 
+        raw_value = ultrasonic_sensor1.distance_centimeters_continuous
+        value = -raw_value + 100
+        if value < 0:
+            set_point = gyro_sensor.angle - (felib.rounds * 90)
+            value = ultrasonic_sensor2.distance_centimeters_continuous
+            if value < 20:
+                set_point -= (20 - value) * 3
+            if value > 30:
+                set_point += (20 - value) * 3
+            felib.set_steering(felib.max_range(-2 * set_point), block = False)
+        else:
+            felib.set_steering(felib.max_range(-value), block = False)
 
-
-
-
-'''
-rotation = 0
-clockwise = True
-
-# main
-gyro_sensor.reset()
-
-
-pid = felib.myPID(0.1, 1, 0, 1)
-
-while (-13 < felib.rounds < 13):
-    #print(color_sensor.color, file = sys.stderr)
-    
-    rotation = gyro_sensor.angle
-    gyro_point = rotation - (felib.rounds * 90)
-    ultrasonic_point = 25 - ultrasonic_sensor.distance_centimeters
-    felib.set_steering(felib.max_range(3 * gyro_point))
-    
-steering_motor.off()
-drive_motor.on_for_rotations(-50, 7)
-'''
+    drive_motor.off()
+    felib.set_steering(0)
