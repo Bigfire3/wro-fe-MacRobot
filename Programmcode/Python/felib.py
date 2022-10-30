@@ -23,7 +23,7 @@ from time import sleep
 steering_motor = MediumMotor(OUTPUT_A)
 
 # sensors
-#gyro_sensor = GyroSensor(INPUT_2)
+gyro_sensor = GyroSensor(INPUT_3)
 color_sensor = ColorSensor(INPUT_4)
 
 # others
@@ -31,6 +31,7 @@ lcd = Display()
 leds = Leds()
 
 # variables
+clockwise = False
 rounds = 0
 
 
@@ -55,20 +56,26 @@ def wait_for_color(color):
     while (color_sensor.color != color):
         pass
 
-def set_steering(direction):
+def set_steering(direction, block = True):
     pid = myPID(0.1, 1, 0, 0)
-    while(not (direction - 3 < -steering_motor.degrees < direction + 3)):
+    if block:
+        while(not (direction - 3 < -steering_motor.degrees < direction + 3)):
+            test_value = -steering_motor.degrees
+            set_value = direction
+            pid_speed = pid.run(set_value, test_value)
+            steering_motor.on(-max_range(pid_speed))
+        steering_motor.off()
+    else:
         test_value = -steering_motor.degrees
         set_value = direction
         pid_speed = pid.run(set_value, test_value)
         steering_motor.on(-max_range(pid_speed))
-    steering_motor.off()
 
 def set_leds(color):
     leds.set_color("LEFT", color)
     leds.set_color("RIGHT", color)
 
-""" def reset_gyro_sensor():
+def reset_gyro_sensor():
     set_leds("RED")
     '''
         while (gyro_sensor.angle == gyro_sensor.angle):
@@ -81,23 +88,23 @@ def set_leds(color):
     sleep(1)
     gyro_sensor.reset()
     sleep(1)
-    set_leds("GREEN") """
+    set_leds("GREEN")
 
 def round_counter():
     global rounds
     while -13 < rounds < 13:
-        if (color_sensor.color == 5): # red/orange
-            if (rounds == 0):
+        if color_sensor.color == 5: # red/orange
+            if rounds == 0:
                 clockwise = True
-            if (clockwise):
+            if clockwise:
                 rounds += 1
                 wait_for_color(6)
             print(rounds, file = sys.stderr)
               
-        elif (color_sensor.color == 2 or color_sensor.color == 0): # blue
-            if (rounds == 0):
+        elif color_sensor.color == 2 or color_sensor.color == 0: # blue
+            if rounds == 0:
                 clockwise = False
-            if (not clockwise):
+            if not clockwise:
                 rounds -= 1
                 wait_for_color(6)
 

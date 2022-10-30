@@ -30,16 +30,17 @@ if __name__ == "__main__":
     while -12 < felib.rounds < 12:
         drive_motor.on(0)
 
-        raw_value = ultrasonic_sensor1.distance_centimeters_continuous
-        value = -raw_value + 100
+        s1_raw = ultrasonic_sensor1.distance_centimeters_continuous
+        value = -s1_raw + 100
         if value < 0:
-            set_point = gyro_sensor.angle - (felib.rounds * 90)
-            value = ultrasonic_sensor2.distance_centimeters_continuous
-            if value < 20:
-                set_point -= (20 - value) * 3
-            if value > 30:
-                set_point += (20 - value) * 3
-            felib.set_steering(felib.max_range(-2 * set_point), block = False)
+            set_point = -2 * (gyro_sensor.angle - (felib.rounds * 90))
+            s2_raw = ultrasonic_sensor2.distance_centimeters_continuous
+            if s2_raw < 20:
+                set_point += (20 - s2_raw) * 3
+            if s2_raw > 30:
+                set_point -= (s2_raw - 30) * 3
+            print(s2_raw, file = sys.stderr)
+            felib.set_steering(felib.max_range(set_point), block = False)
         else:
             felib.set_steering(felib.max_range(-value), block = False)
 
