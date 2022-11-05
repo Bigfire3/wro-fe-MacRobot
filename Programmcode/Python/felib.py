@@ -92,6 +92,8 @@ def reset_gyro_sensor():
 
 def round_counter():
     global rounds
+    color_sensor.calibrate_white()
+    sleep(1)
     while -13 < rounds < 13:
         if color_sensor.color == 5: # red/orange
             if rounds == 0:
@@ -135,3 +137,4 @@ class myPID:
 
         self.err = error
         return(output)
+        
