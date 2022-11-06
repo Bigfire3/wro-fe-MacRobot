@@ -19,6 +19,7 @@ if __name__ == "__main__":
 
     # variables
     sign = 0
+    old_s1 = 0
 
     # main
     steering_motor.reset()
@@ -26,30 +27,29 @@ if __name__ == "__main__":
     line_thread = threading.Thread(target = felib.round_counter)
     line_thread.start()
 
-    while -12 < felib.rounds < 12:
-        drive_motor.on(100)
+    while -13 < felib.rounds < 13:
         s1_raw = ultrasonic_sensor1.distance_centimeters_continuous
-        sign = felib.rounds / abs(felib.rounds) if felib.rounds != 0 else 0
-        if sign == 0:
-            sign1 = 1
+        d_s1 = old_s1 - s1_raw
+        if not(-10 < d_s1 < 10):
+            old_s1 = s1_raw
+            s1_raw = 101
+        old_s1 = s1_raw
+        
+        if (d_s1 > 0) and (s1_raw < 110):
+            drive_motor.on(50)
         else:
-            sign1 = sign
+            drive_motor.on(100)
 
-        if sign > 0:
-            felib.set_leds("RED")
-        elif sign < 0:
-            felib.set_leds("GREEN")
+        if felib.rounds != 0:
+            sign = felib.rounds / abs(felib.rounds)
         else:
-            felib.set_leds("BLACK")
+            sign = 0
+
         value = -s1_raw + 100
         if value < 0 or sign == 0:
             set_point = -2 * (gyro_sensor.angle - (felib.rounds * 90))
             s2_raw = ultrasonic_sensor2.distance_centimeters_continuous
-            if s2_raw < 20:
-                set_point += (20 - s2_raw) * 2
-            if s2_raw > 30:
-                set_point -= (s2_raw - 30) * 2
-            felib.set_steering(felib.max_range(sign1 * set_point), block = False)
+            felib.set_steering(felib.max_range(set_point + ((20 - s2_raw) * 1.5)), block = False)
         else:
             felib.set_steering(felib.max_range(sign * value), block = False)
             
