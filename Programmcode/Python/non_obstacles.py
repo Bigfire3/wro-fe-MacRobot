@@ -35,7 +35,7 @@ if __name__ == "__main__":
             s1_raw = 101
         old_s1 = s1_raw
         
-        if (d_s1 > 0) and (s1_raw < 110):
+        if (0 < d_s1 < 20) and (s1_raw < 110):
             drive_motor.on(50)
         else:
             drive_motor.on(100)
