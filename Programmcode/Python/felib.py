@@ -14,9 +14,7 @@
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
-from ev3dev2.display import Display
 from ev3dev2.led import Leds
-from textwrap import wrap
 from time import sleep
 
 # motors
@@ -27,22 +25,11 @@ gyro_sensor = GyroSensor(INPUT_3)
 color_sensor = ColorSensor(INPUT_4)
 
 # others
-lcd = Display()
 leds = Leds()
 
 # variables
 clockwise = False
 rounds = 0
-
-
-def show_text(string, font_name = "courB24", font_width = 15, font_height = 24):
-    lcd.clear()
-    strings = wrap(string, width = int(180 / font_width))
-    for i in range(len(strings)):
-        x_val = 89 - font_width / 2 * len(strings[i])
-        y_val = 63 - (font_height + 1) * (len(strings) / 2 - i)
-        lcd.text_pixels(strings[i], False, x_val, y_val, font=font_name)
-    lcd.update()
 
 def max_range(value, min = -100, max = 100):
     if (value < min):
@@ -93,7 +80,7 @@ def reset_gyro_sensor():
 def round_counter():
     global rounds
     color_sensor.calibrate_white()
-    sleep(1.5)
+    sleep(1)
     while -12 < rounds < 12:
         if color_sensor.color == 5: # red/orange
             if rounds == 0:
