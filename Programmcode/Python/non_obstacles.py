@@ -49,9 +49,9 @@ if __name__ == "__main__":
         if value < 0 or sign == 0:
             set_point = -2 * (gyro_sensor.angle - (felib.rounds * 90))
             s2_raw = ultrasonic_sensor2.distance_centimeters_continuous
-            felib.set_steering(felib.max_range(set_point + ((20 - s2_raw) * 1.5)), block = False)
+            felib.set_steering(felib.max_range(set_point + ((20 - s2_raw) * 1.5)))
         else:
-            felib.set_steering(felib.max_range(sign * value), block = False)
+            felib.set_steering(felib.max_range(sign * value))
             
     drive_motor.off()
-    felib.set_steering(0)
+    felib.set_steering(0, block = True)

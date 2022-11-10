@@ -22,16 +22,18 @@ class Object:
         felib.set_leds(self.color)
         if x_pos < 25 and height > 70: # pass
             felib.set_leds("BLACK")
-            felib.set_steering(0)
-            drive_motor.on_for_rotations(50, 1.5 + abs(2 * sin(gyro_sensor.angle + felib.rounds * 90)))
+            felib.set_steering(0, block = True)
+            drive_motor.on_for_rotations(10, 1.5 + abs(2 * sin(gyro_sensor.angle + felib.rounds * 90)))
         else:
             if x_pos > 20 and height > 110: # back
-                felib.set_steering(-60 * self.sign)
+                felib.set_steering(-60 * self.sign, block = True)
                 drive_motor.on_for_rotations(-50, 2)
-                felib.set_steering(0)
+                felib.set_steering(0, block = True)
                 drive_motor.on_for_rotations(50, 3)
             else: # aim
                 test_value = -0.4 * x_pos + 75
+                if test_value < 0:
+                    test_value = 0
                 set_value = height
                 pid_value = self.pid.run(set_value, test_value)
                 calculated_steering = felib.max_range((pid_value) * (2 * self.sign)) * self.sign
@@ -41,14 +43,15 @@ class Object:
 if __name__ == "__main__":
     # motors
     steering_motor = MediumMotor(OUTPUT_A)
-    drive_motor = MediumMotor(OUTPUT_B)
+    drive_motor = LargeMotor(OUTPUT_B)
 
     # sensors
-    gyro_sensor = GyroSensor(INPUT_2)
+    ultrasonic_sensor = UltrasonicSensor(INPUT_2)
+    gyro_sensor = GyroSensor(INPUT_3)
     color_sensor = ColorSensor(INPUT_4)
-    LegoPort(INPUT_4).mode = "auto"
+    LegoPort(INPUT_1).mode = "auto"
     sleep(2)
-    pixy_cam = Sensor(INPUT_4)
+    pixy_cam = Sensor(INPUT_1)
     pixy_cam.mode = "ALL"
 
     # others
@@ -79,7 +82,7 @@ if __name__ == "__main__":
     felib.set_leds("BLACK")
 
     while (-13 < felib.rounds < 13):
-        drive_motor.on(70)
+        drive_motor.on(10)
         
         sig = pixy_cam.value(1) * 256 + pixy_cam.value(0) # Signature of largest object
         x_pos = pixy_cam.value(2)    # X-centroid of largest SIG1-object
@@ -96,9 +99,8 @@ if __name__ == "__main__":
 
         else:
             felib.set_leds("BLACK")
-            drive_motor.on(70)
             felib.set_steering(-(felib.max_range((gyro_sensor.angle - (felib.rounds * 90)) * 3)))
 
     drive_motor.off()
-    felib.set_steering(0)
+    felib.set_steering(0, block = True)
     steering_motor.off()

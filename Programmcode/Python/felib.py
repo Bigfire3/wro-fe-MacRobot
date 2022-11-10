@@ -43,7 +43,7 @@ def wait_for_color(color):
     while (color_sensor.color != color):
         pass
 
-def set_steering(direction, block = True):
+def set_steering(direction, block = False):
     pid = myPID(0.1, 1, 0, 0)
     if block:
         while(not (direction - 3 < -steering_motor.degrees < direction + 3)):
@@ -109,7 +109,7 @@ class myPID:
     ki  = 0.0
     err = 0.0
     int = 0.0
-    def __init__(self, dt, kp, kd, ki):
+    def __init__(self, dt, kp, ki, kd):
         self.dt  = dt
         self.kp  = kp
         self.kd  = kd
