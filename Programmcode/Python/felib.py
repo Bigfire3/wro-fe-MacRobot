@@ -96,7 +96,7 @@ def round_counter():
             if not clockwise:
                 rounds -= 1
                 wait_for_color(6)
-    sleep(2)
+    sleep(1.5)
     if clockwise:
         rounds += 1
     else:

@@ -6,6 +6,7 @@ from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
 import felib
 import threading
+import math
 
 if __name__ == "__main__":
     # motors
@@ -35,8 +36,8 @@ if __name__ == "__main__":
             s1_raw = 101
         old_s1 = s1_raw
         
-        if (0 < d_s1 < 20) and (s1_raw < 110):
-            drive_motor.on(50)
+        if (0 < d_s1 < 20) and (s1_raw < 120):
+            drive_motor.on(35)
         else:
             drive_motor.on(100)
 
@@ -49,7 +50,7 @@ if __name__ == "__main__":
         if value < 0 or sign == 0:
             set_point = -2 * (gyro_sensor.angle - (felib.rounds * 90))
             s2_raw = ultrasonic_sensor2.distance_centimeters_continuous
-            felib.set_steering(felib.max_range(set_point + ((20 - s2_raw) * 1.5)))
+            felib.set_steering(felib.max_range(set_point + ((15 - s2_raw) * 1.5)))
         else:
             felib.set_steering(felib.max_range(sign * value))
             
