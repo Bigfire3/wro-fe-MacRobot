@@ -15,7 +15,7 @@ from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
 from ev3dev2.led import Leds
-from time import sleep
+import time
 
 # motors
 steering_motor = MediumMotor(OUTPUT_A)
@@ -72,15 +72,17 @@ def reset_gyro_sensor():
     set_leds("YELLOW")
     while (not (gyro_sensor.angle == gyro_sensor.angle)):
         pass
-    sleep(1)
+    time.sleep(1)
     gyro_sensor.reset()
-    sleep(1)
+    time.sleep(1)
     set_leds("GREEN")
 
 def round_counter():
     global rounds
     color_sensor.calibrate_white()
-    sleep(1)
+    time.sleep(1)
+    d_times = []
+    old_time = 0
     while -12 < rounds < 12:
         if color_sensor.color == 5: # red/orange
             if rounds == 0:
@@ -88,7 +90,11 @@ def round_counter():
             if clockwise:
                 rounds += 1
                 wait_for_color(6)
-            print(rounds, file = sys.stderr)
+                if old_time == 0:
+                    old_time = time.time()
+                else:
+                    d_times.append(time.time() - old_time)
+                    old_time = time.time()
               
         elif color_sensor.color == 2: # blue
             if rounds == 0:
@@ -96,7 +102,21 @@ def round_counter():
             if not clockwise:
                 rounds -= 1
                 wait_for_color(6)
-    sleep(1.5)
+                if old_time == 0:
+                    old_time = time.time()
+                else:
+                    d_times.append(time.time() - old_time)
+                    old_time = time.time()
+    
+    sum = 0
+    num = 0
+    for value in d_times:
+        sum += value
+        num += 1
+    time_to_sleep = (sum / num) / 2
+    print(time_to_sleep)
+    time.sleep(time_to_sleep)
+
     if clockwise:
         rounds += 1
     else:

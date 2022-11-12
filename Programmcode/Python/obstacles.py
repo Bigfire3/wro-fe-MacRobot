@@ -25,7 +25,7 @@ class Object:
             felib.set_steering(0, block = True)
             drive_motor.on_for_rotations(my_speed, (0.5 + abs(2 * sin(gyro_sensor.angle + felib.rounds * 90))) / 2.9225)
         else:
-            if x_pos > 25 and height > 110: # back
+            if x_pos > 25 and height > 100: # back
                 felib.set_steering(-60 * self.sign, block = True)
                 drive_motor.on_for_rotations(-my_speed, 2 / 2.9225)
                 felib.set_steering(0, block = True)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     sleep(1)
     felib.set_leds("BLACK")
 
-    while (-13 < felib.rounds < 13):
+    while -13 < felib.rounds < 13:
         drive_motor.on(my_speed)
         
         sig = pixy_cam.value(1) * 256 + pixy_cam.value(0) # Signature of largest object
@@ -101,9 +101,10 @@ if __name__ == "__main__":
         else:
             felib.set_leds("BLACK")
             set_point = -2 * (gyro_sensor.angle - (felib.rounds * 90))
-            s2_raw = ultrasonic_sensor.distance_centimeters_continuous
-            felib.set_steering(felib.max_range(set_point + (15 - s2_raw)))
+            s1_raw = ultrasonic_sensor.distance_centimeters_continuous
+            if s1_raw < 15:
+                set_point = set_point + ((15 - s1_raw) * 3)
+            felib.set_steering(felib.max_range(set_point))
 
     drive_motor.off()
     felib.set_steering(0, block = True)
-    steering_motor.off()
