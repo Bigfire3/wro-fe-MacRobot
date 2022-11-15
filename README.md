@@ -1,6 +1,6 @@
 # Future Enginners - MacRobot
 
-![MacRobot](https://user-images.githubusercontent.com/98695515/175649754-faef9d9c-d74e-4d6a-8ee8-871db03e8625.JPG)
+![MacRobot](https://github.com/Bigfire3/wro-fe-MacRobot/blob/master/robot_car/V2/MacRobot.jpeg?raw=true)
 
 This repository contains all important files and information about our autonomous driving car "MacRobot" (comes from the TV series MacGyver. As a base/microcontroller we chose the Lego Mindstorms EV3, which we equipped with the PixyCam CMUcam5 V1 (Lego Mindstorms version) for object recognition. The reasons for choosing the EV3 were the high reliability as well as the already existing knowledge and experience with the system from Lego incl. programming. We developed the program for the regional competition, which took place for us in Schweinfurt, in the Lego software based on LabView. The software ran on an EV3 brick with the original Lego Mindstorms EV3 firmware. For the Germany finals, we went a step further and tried to program the EV3 brick based on the ev3dev firmware using Python. Hope was increased flexibility and versatility, but reliability was lacking. For the German finals we did without any modifications on the car. For the world final in Dortmund, we modified the robot a bit to reach higher speeds. Going faster also meant some changes in the software.
 
