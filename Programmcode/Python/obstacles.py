@@ -23,17 +23,16 @@ class Object:
         if x_pos < 25 and height > 70: # pass
             felib.set_leds("BLACK")
             felib.set_steering(0, block = True)
-            drive_motor.on_for_rotations(my_speed, (0.5 + abs(2 * sin(gyro_sensor.angle + felib.rounds * 90))) / 2.9225)
+            drive_motor.on_for_rotations(my_speed, abs(gyro_sensor.angle - (felib.rounds * 90)) / 180)
+            # drive_motor.on_for_rotations(my_speed, (0.5 + abs(2 * sin(gyro_sensor.angle + felib.rounds * 90))) / 2.9225)
         else:
             if x_pos > 25 and height > 100: # back
                 felib.set_steering(-60 * self.sign, block = True)
-                drive_motor.on_for_rotations(-my_speed, 2 / 2.9225)
+                drive_motor.on_for_rotations(-my_speed, 0.5)
                 felib.set_steering(0, block = True)
-                drive_motor.on_for_rotations(my_speed, 3 / 2.9225)
+                drive_motor.on_for_rotations(my_speed, 0.75)
             else: # aim
                 test_value = -0.4 * x_pos + 75
-                if test_value < 0:
-                    test_value = 0
                 set_value = height
                 pid_value = self.pid.run(set_value, test_value)
                 calculated_steering = felib.max_range((pid_value) * (2 * self.sign)) * self.sign
@@ -72,16 +71,16 @@ if __name__ == "__main__":
     green_object = Object("GREEN", -1)
     line_thread = threading.Thread(target = felib.round_counter)
 
-
-    felib.set_leds("BLACK")
+    felib.set_leds("ORANGE")
+    button.wait_for_bump("enter")
+    felib.set_leds("RED")
     steering_motor.reset()
     sleep(1)
     felib.reset_gyro_sensor()
     line_thread.start()
-    button.wait_for_bump("enter")
     sleep(1)
-    felib.set_leds("BLACK")
 
+    felib.set_leds("BLACK")
     while -13 < felib.rounds < 13:
         drive_motor.on(my_speed)
         
@@ -103,7 +102,7 @@ if __name__ == "__main__":
             set_point = -2 * (gyro_sensor.angle - (felib.rounds * 90))
             s1_raw = ultrasonic_sensor.distance_centimeters_continuous
             if s1_raw < 15:
-                set_point = set_point + ((15 - s1_raw) * 3)
+                set_point += (15 - s1_raw) * 3
             felib.set_steering(felib.max_range(set_point))
 
     drive_motor.off()

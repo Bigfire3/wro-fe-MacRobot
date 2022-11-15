@@ -4,6 +4,7 @@
 from ev3dev2.motor import *
 from ev3dev2.sensor.lego import *
 from ev3dev2._platform.ev3 import *
+from ev3dev2.button import Button
 import felib
 import threading
 
@@ -17,11 +18,16 @@ if __name__ == "__main__":
     ultrasonic_sensor2 = UltrasonicSensor(INPUT_2)
     gyro_sensor = GyroSensor(INPUT_3)
 
+    # others
+    button = Button()
+
     # variables
     sign = 0
     old_s1 = 0
 
     # main
+    felib.set_leds("ORANGE")
+    button.wait_for_bump("enter")
     steering_motor.reset()
     felib.reset_gyro_sensor()
     line_thread = threading.Thread(target = felib.round_counter)
