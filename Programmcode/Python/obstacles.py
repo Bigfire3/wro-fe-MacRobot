@@ -35,7 +35,7 @@ class Object:
                 test_value = -0.4 * x_pos + 75
                 set_value = height
                 pid_value = self.pid.run(set_value, test_value)
-                calculated_steering = felib.max_range((pid_value) * (2 * self.sign)) * self.sign
+                calculated_steering = felib.max_range(pid_value * 2)
                 felib.set_steering(calculated_steering * self.sign)
 
 # main
@@ -87,10 +87,10 @@ if __name__ == "__main__":
         sig = pixy_cam.value(1) * 256 + pixy_cam.value(0) # Signature of largest object
         x_pos = pixy_cam.value(2)    # X-centroid of largest SIG1-object
         #y_pos = pixy_cam.value(3)    # Y-centroid of largest SIG1-object
-        #width = pixy_cam.value(4)         # Width of the largest SIG1-object
+        width = pixy_cam.value(4)         # Width of the largest SIG1-object
         height = pixy_cam.value(5)        # Height of the largest SIG1-object
 
-        if (height > 15):
+        if (height > 15 and height > width):
             if sig > sig_switch:
                 x_pos = 255 - x_pos
                 steering_point = green_object.object_action(x_pos, height)
